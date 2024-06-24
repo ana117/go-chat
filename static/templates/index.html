@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GoChat, real-time chat room built on Go.">
+    <title>GoChat</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<!-- https://www.realtimecolors.com/?colors=dce5f0-0a121b-8cb0d9-234c7c-4b8ad4&fonts=Inter-Inter -->
+<body class="flex flex-col min-h-screen bg-[#e5edf5] text-[#0f1824]">
+    <main class="grow flex flex-col justify-center p-4">
+        <header class="text-center">
+            <h1 class="text-4xl font-bold">GoChat</h1>
+            <p>Real-time chat room built on Go.</p>
+        </header>
+
+        <section class="flex flex-col items-center mt-8">
+            <h2 class="text-2xl">
+                Available Rooms
+            </h2>
+            <form method="POST" class="flex flex-col items-center gap-8">
+                <div class="flex flex-wrap justify-center gap-4 mt-4">
+                    {{$default := .DefaultRoom}}
+                    {{range .Rooms}}
+                    <label class="relative bg-white rounded-md p-2 cursor-pointer border-2 hover:shadow-xl has-[:checked]:border-[#264a73] duration-500 accent-[#264a73]">
+                        <input type="radio" name="room" value="{{.Id}}" class="absolute top-3 right-3" {{if eq .Name $default}}checked{{end}}>
+                        <span class="flex flex-col">
+                            <span class="font-bold text-[#264a73]">
+                                {{.Name}}
+                            </span>
+                            <span class="text-slate-600">
+                                {{.Description}}
+                            </span>
+                        </span>
+                    </label>
+                    {{end}}
+                </div>
+
+                <div class="flex gap-4">
+                    <input required type="text" name="username" placeholder="Username" class="p-2 rounded-md grow focus:outline-[#264a73]">
+                    <button type="submit" class="py-2 px-4 text-white bg-[#264a73] rounded-md hover:-translate-y-1 duration-500">
+                        Join Chat
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+    
+    <footer class="my-8">
+        <div class="text-center">
+            <p>
+                Built by 
+                <a href="https://ana117.github.io/" target="_blank" class="underline underline-offset-2 hover:underline-offset-4 duration-500">
+                    ana117
+                </a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
