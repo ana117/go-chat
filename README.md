@@ -5,8 +5,8 @@ A simple real-time chat application using Go and WebSockets.
 1. Clone the repository
 2. Build and run the application
 ```bash
-go build -o gochat
-./gochat
+go build
+go-chat.exe
 ```
 3. Open your browser and navigate to [http://localhost:8080](http://localhost:8080)
 
