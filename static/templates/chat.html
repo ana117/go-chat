@@ -87,12 +87,12 @@
                 </div>
 
                 <div class="px-8 py-4 lg:w-4/5 flex flex-col gap-4">
-                    <div class="chat h-[calc(100vh-400px)] lg:h-[calc(100vh-330px)] overflow-y-auto flex flex-col gap-4 pe-2"></div>
+                    <div class="chat h-[calc(100vh-420px)] lg:h-[calc(100vh-360px)] overflow-y-auto flex flex-col gap-4 pe-2"></div>
 
-                    <div class="flex justify-between items-center gap-4 rounded-md text-white relative">
-                        <div id="message" class="max-w-full flex-grow p-4 bg-[#264a73] focus:outline-none rounded-md text-wrap break-all" contenteditable="true" data-placeholder="Type a message..."></div>
+                    <div class="flex justify-between  gap-4 rounded-md text-white h-[100px] items-end">
+                        <div id="message" class="max-w-full max-h-[100px] bottom-0 overflow-y-auto flex-grow p-4 bg-[#264a73] focus:outline-none rounded-md text-wrap break-all" contenteditable="true" data-placeholder="Type a message..."></div>
                         
-                        <button onclick="sendMessage()" class="h-12 aspect-square p-2 bg-[#264a73] rounded-full hover:bg-[#1a3a5e] hover:scale-110 duration-500">
+                        <button onclick="sendMessage()" class="h-14 aspect-square p-3 bg-[#264a73] rounded-full hover:bg-[#1a3a5e] hover:scale-110 duration-500">
                             <svg class="h-full w-full fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m21.426 11.095-17-8A1 1 0 0 0 3.03 4.242l1.212 4.849L12 12l-7.758 2.909-1.212 4.849a.998.998 0 0 0 1.396 1.147l17-8a1 1 0 0 0 0-1.81z"></path></svg>
                         </button>
                     </div>
@@ -174,10 +174,10 @@
             let you = '{{.User.Username}}';
 
             let messageElement = document.createElement('div');
-            messageElement.classList.add('flex', 'gap-4', 'items-center');
+            messageElement.classList.add('flex', 'gap-4', 'items-end');
 
             let senderIcon = document.createElement('div');
-            senderIcon.classList.add('rounded-full', 'font-bold', 'w-8', 'h-8', 'truncate', 'flex', 'items-center', 'justify-center', 'py-2');
+            senderIcon.classList.add('rounded-full', 'font-bold', 'w-10', 'h-10', 'truncate', 'flex', 'items-center', 'justify-center', 'py-2', 'shrink-0');
             senderIcon.innerText = message.sender.shortUsername;
 
             let messageText = document.createElement('p');
