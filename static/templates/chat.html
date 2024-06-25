@@ -73,16 +73,10 @@
                             Leave Room
                         </button>
                     </div>
-                    <div class="flex lg:flex-col overflow-x-auto lg:flex-wrap gap-2 lg:gap-4 pb-2 lg:pb-0 w-full items-center lg:items-start">
-                        {{$you := .User.Username}}
+                    <div class="user-list flex lg:flex-col overflow-x-auto lg:flex-wrap gap-2 lg:gap-4 pb-2 lg:pb-0 w-full items-center lg:items-start">
                         {{range .Members}}
                         <div class="flex items-center justify-between gap-2 bg-white rounded-md py-2 px-4 min-w-fit lg:w-full h-full lg:h-fit">
-                            <span>
-                                {{.Username}}
-                            </span>
-                            {{if eq .Username $you}}
-                                <span class="text-[#264a73] font-bold ms-auto">You</span>
-                            {{end}}
+                            {{.Username}}
                         </div>
                         {{end}}
                     </div>
@@ -93,29 +87,7 @@
                 </div>
 
                 <div class="px-8 py-4 lg:w-4/5 flex flex-col gap-4">
-                    <div class="chat h-[calc(100vh-400px)] lg:h-[calc(100vh-330px)] overflow-y-auto flex flex-col gap-4 pe-2">
-                        {{range .Messages}}
-                        {{if eq .Sender.Username $you}}
-                        <div class="flex gap-4 flex-row-reverse items-center text-white *:py-2">
-                            <div class="bg-[#264a73] rounded-full font-bold w-8 h-8 truncate flex items-center justify-center">
-                                {{.Sender.ShortUsername}}
-                            </div>
-                            <p class="flex items-center bg-[#264a73] rounded-md px-4">
-                                {{.Message}}
-                            </p>
-                        </div>
-                        {{else}}
-                        <div class="flex gap-4 items-center *:py-2">
-                            <div class="bg-white rounded-full font-bold w-8 h-8 truncate flex items-center justify-center">
-                                {{.Sender.ShortUsername}}
-                            </div>
-                            <p class="flex items-center bg-white rounded-md px-4">
-                                {{.Message}}
-                            </p>
-                        </div>
-                        {{end}}
-                        {{end}}
-                    </div>
+                    <div class="chat h-[calc(100vh-400px)] lg:h-[calc(100vh-330px)] overflow-y-auto flex flex-col gap-4 pe-2"></div>
 
                     <div class="flex justify-between items-center gap-4 rounded-md text-white relative">
                         <div id="message" class="max-w-full flex-grow p-4 bg-[#264a73] focus:outline-none rounded-md text-wrap break-all" contenteditable="true" data-placeholder="Type a message..."></div>
@@ -151,6 +123,112 @@
             }).then(() => {
                 window.location.href = '/';
             });
+        }
+
+        let socket = new WebSocket('ws://' + window.location.host + '/ws');
+        socket.onmessage = function(event) {
+            let wsMessage = JSON.parse(event.data);
+            let message = wsMessage.message;
+            let messageType = wsMessage.messageType;
+
+            switch (messageType) {
+                case 'chat':
+                    updateChat(message);
+                    break;
+                case 'join':
+                    addUserList(message);
+                    break;
+                case 'leave':
+                    removeUserList(message);
+                    break;
+                default:
+                    console.error('Unknown message type:', messageType);
+            }
+        };
+
+        function sendMessage() {
+            let messageContent = document.getElementById('message').innerText;
+            if (messageContent.trim() === '') {
+                return;
+            }
+
+            socket.send(JSON.stringify({
+                messageType: 'chat',
+                message: {
+                    sender: {{.User}},
+                    message: messageContent
+                }
+            }));
+            document.getElementById('message').innerText = '';
+        }
+
+        document.getElementById('message').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function updateChat(message) {
+            let chat = document.querySelector('.chat');
+            let you = '{{.User.Username}}';
+
+            let messageElement = document.createElement('div');
+            messageElement.classList.add('flex', 'gap-4', 'items-center');
+
+            let senderIcon = document.createElement('div');
+            senderIcon.classList.add('rounded-full', 'font-bold', 'w-8', 'h-8', 'truncate', 'flex', 'items-center', 'justify-center', 'py-2');
+            senderIcon.innerText = message.sender.shortUsername;
+
+            let messageText = document.createElement('p');
+            messageText.classList.add('flex', 'items-center', 'rounded-md', 'px-4', 'py-2');
+            messageText.innerText = message.message;
+
+            if (message.sender.username === you) {
+                messageElement.classList.add('flex-row-reverse');
+                messageElement.classList.add('text-white');
+                senderIcon.classList.add('bg-[#264a73]');
+                messageText.classList.add('bg-[#264a73]');
+            } else {
+                senderIcon.classList.add('bg-white');
+                messageText.classList.add('bg-white');
+            }
+
+            messageElement.appendChild(senderIcon);
+            messageElement.appendChild(messageText);
+
+            chat.appendChild(messageElement);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function addUserList(username) {
+            let userList = document.querySelector('.user-list');
+
+            let userElement = document.createElement('div');
+            userElement.classList.add('flex', 'items-center', 'justify-between', 'gap-2', 'bg-white', 'rounded-md', 'py-2', 'px-4', 'min-w-fit', 'lg:w-full', 'h-full', 'lg:h-fit');
+            userElement.innerText = username;
+
+            let you = '{{.User.Username}}';
+            if (username === you) {
+                let youElement = document.createElement('span');
+                youElement.classList.add('text-[#264a73]', 'font-bold', 'ms-auto');
+                youElement.innerText = 'You';
+                userElement.appendChild(youElement);
+            }
+
+            userList.appendChild(userElement);
+        }
+
+        function removeUserList(username) {
+            let userList = document.querySelector('.user-list');
+            let userElements = userList.children;
+
+            for (let i = 0; i < userElements.length; i++) {
+                if (userElements[i].innerText === username) {
+                    userList.removeChild(userElements[i]);
+                    break;
+                }
+            }
         }
     </script>
 </body>
