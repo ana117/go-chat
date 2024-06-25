@@ -8,10 +8,37 @@
     <title>GoChat</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        [contenteditable]:empty:before {
+            content: attr(data-placeholder);
+            color: #a0aec0;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0.5em;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #264a73;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #1d395a;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 
 <!-- https://www.realtimecolors.com/?colors=dce5f0-0a121b-8cb0d9-234c7c-4b8ad4&fonts=Inter-Inter -->
-<body class="flex flex-col min-h-screen bg-[#e5edf5] text-[#0f1824]">
+<body class="flex flex-col min-h-screen max-h-screen bg-[#e5edf5] text-[#0f1824]">
     <main class="grow flex flex-col justify-center py-4">
         <header class="text-center">
             <h1 class="text-4xl font-bold">GoChat</h1>
@@ -25,10 +52,11 @@
                         Currently Online
                     </h3>
                     <div class="flex flex-col gap-4">
+                        {{$you := .User.Username}}
                         {{range .Members}}
                         <div class="flex justify-between gap-2 bg-white rounded-md py-2 px-4">
-                            <span>{{.}}</span>
-                            {{if eq . $.Username}}
+                            <span>{{.Username}}</span>
+                            {{if eq .Username $you}}
                                 <span class="text-[#264a73] font-bold">You</span>
                             {{end}}
                         </div>
@@ -39,8 +67,38 @@
                     </button>
                 </div>
 
-                <div class="p-4 grow">
-                    Right Side
+                <div class="px-8 py-4 w-4/5 flex flex-col gap-4">
+                    <div class="h-[calc(100vh-330px)] overflow-y-auto flex flex-col gap-4 pe-2">
+                        {{range .Messages}}
+                        {{if eq .Sender.Username $you}}
+                        <div class="flex gap-4 flex-row-reverse items-center text-white *:py-2">
+                            <div class="bg-[#264a73] rounded-full font-bold w-8 h-8 truncate flex items-center justify-center">
+                                {{.Sender.ShortUsername}}
+                            </div>
+                            <p class="flex items-center bg-[#264a73] rounded-md px-4">
+                                {{.Message}}
+                            </p>
+                        </div>
+                        {{else}}
+                        <div class="flex gap-4 items-center *:py-2">
+                            <div class="bg-white rounded-full font-bold w-8 h-8 truncate flex items-center justify-center">
+                                {{.Sender.ShortUsername}}
+                            </div>
+                            <p class="flex items-center bg-white rounded-md px-4">
+                                {{.Message}}
+                            </p>
+                        </div>
+                        {{end}}
+                        {{end}}
+                    </div>
+
+                    <div class="flex justify-between items-center gap-4 rounded-md text-white relative">
+                        <div id="message" class="max-w-full flex-grow p-4 bg-[#264a73] focus:outline-none rounded-md text-wrap break-all" contenteditable="true" data-placeholder="Type a message..."></div>
+                        
+                        <button onclick="sendMessage()" class="h-12 aspect-square p-2 bg-[#264a73] rounded-full hover:bg-[#1a3a5e] hover:scale-110 duration-500">
+                            <svg class="h-full w-full fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m21.426 11.095-17-8A1 1 0 0 0 3.03 4.242l1.212 4.849L12 12l-7.758 2.909-1.212 4.849a.998.998 0 0 0 1.396 1.147l17-8a1 1 0 0 0 0-1.81z"></path></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
