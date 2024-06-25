@@ -1,6 +1,9 @@
 # GoChat
 A simple real-time chat application using Go and WebSockets.
 
+https://github.com/ana117/go-chat/assets/63540951/9b76c165-0c39-496d-a652-3af133435c52
+
+
 ## Installation
 1. Clone the repository
 2. Build and run the application
