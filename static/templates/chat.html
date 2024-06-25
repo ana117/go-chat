@@ -17,20 +17,37 @@
 
         ::-webkit-scrollbar {
             width: 0.5em;
-            border-radius: 5px;
+            height: 0.5em;
         }
 
         ::-webkit-scrollbar-track {
             background-color: #f1f1f1;
-            border-radius: 5px;
         }
 
         ::-webkit-scrollbar-thumb {
+            background-color: #000000;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color:#424242;
+        }
+
+        .chat::-webkit-scrollbar {
+            width: 0.5em;
+            border-radius: 5px;
+        }
+
+        .chat::-webkit-scrollbar-track {
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        .chat::-webkit-scrollbar-thumb {
             background-color: #264a73;
             border-radius: 5px;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
+        .chat::-webkit-scrollbar-thumb:hover {
             background-color: #1d395a;
             border-radius: 5px;
         }
@@ -39,36 +56,44 @@
 
 <!-- https://www.realtimecolors.com/?colors=dce5f0-0a121b-8cb0d9-234c7c-4b8ad4&fonts=Inter-Inter -->
 <body class="flex flex-col min-h-screen max-h-screen bg-[#e5edf5] text-[#0f1824]">
-    <main class="grow flex flex-col justify-center py-4">
+    <main class="grow flex flex-col justify-center pt-4 lg:pb-4">
         <header class="text-center">
             <h1 class="text-4xl font-bold">GoChat</h1>
             <p>Real-time chat room built on Go.</p>
         </header>
 
         <section class="flex flex-col items-center justify-center mt-8 grow">
-            <div class="grow flex w-full border-4 border-[#264a73]">
-                <div class="py-4 px-8 w-1/5 bg-[#264a73] flex flex-col gap-8">
-                    <h3 class="text-white font-bold text-xl">
-                        Currently Online
-                    </h3>
-                    <div class="flex flex-col gap-4">
+            <div class="grow flex flex-col lg:flex-row w-full border-4 border-[#264a73]">
+                <div class="py-4 px-8 lg:w-1/5 bg-[#264a73] flex flex-col gap-8">
+                    <div class="flex items-center justify-between">
+                        <h3 class="w-full text-white font-bold text-xl text-ellipsis overflow-hidden">
+                            {{.Room.Name}}
+                        </h3>
+                        <button onclick="leave()" class="w-32 lg:hidden text-sm bg-red-700/70 text-white py-2 px-2 rounded-md hover:bg-red-600 duration-500">
+                            Leave Room
+                        </button>
+                    </div>
+                    <div class="flex lg:flex-col overflow-x-auto lg:flex-wrap gap-2 lg:gap-4 pb-2 lg:pb-0 w-full items-center lg:items-start">
                         {{$you := .User.Username}}
                         {{range .Members}}
-                        <div class="flex justify-between gap-2 bg-white rounded-md py-2 px-4">
-                            <span>{{.Username}}</span>
+                        <div class="flex items-center justify-between gap-2 bg-white rounded-md py-2 px-4 min-w-fit lg:w-full h-full lg:h-fit">
+                            <span>
+                                {{.Username}}
+                            </span>
                             {{if eq .Username $you}}
-                                <span class="text-[#264a73] font-bold">You</span>
+                                <span class="text-[#264a73] font-bold ms-auto">You</span>
                             {{end}}
                         </div>
                         {{end}}
                     </div>
-                    <button onclick="leave()" class="bg-red-700/70 text-white py-2 px-4 rounded-md mt-auto hover:bg-red-600 duration-500">
+                    
+                    <button onclick="leave()" class="hidden lg:block bg-red-700/70 text-white py-2 px-4 rounded-md lg:mt-auto hover:bg-red-600 duration-500">
                         Leave Room
                     </button>
                 </div>
 
-                <div class="px-8 py-4 w-4/5 flex flex-col gap-4">
-                    <div class="h-[calc(100vh-330px)] overflow-y-auto flex flex-col gap-4 pe-2">
+                <div class="px-8 py-4 lg:w-4/5 flex flex-col gap-4">
+                    <div class="chat h-[calc(100vh-400px)] lg:h-[calc(100vh-330px)] overflow-y-auto flex flex-col gap-4 pe-2">
                         {{range .Messages}}
                         {{if eq .Sender.Username $you}}
                         <div class="flex gap-4 flex-row-reverse items-center text-white *:py-2">
@@ -104,7 +129,7 @@
         </section>
     </main>
     
-    <footer class="my-8">
+    <footer class="my-8 hidden lg:block">
         <div class="text-center">
             <p>
                 Built by 
